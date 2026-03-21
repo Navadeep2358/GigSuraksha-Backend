@@ -7,23 +7,25 @@ const session = require("express-session");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 
-const app = express();
+const app = express(); // ✅ MISSING LINE (VERY IMPORTANT)
 
 /*
 ================================
 CORS CONFIG
-Allow local + deployed frontend
 ================================
 */
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",              // local frontend
-      "https://your-frontend-url.vercel.app" // 🔴 replace after deploy
+      "http://localhost:5173",   // local frontend
+      // add your deployed frontend later
     ],
     credentials: true
   })
 );
+
+// ✅ handle preflight requests (IMPORTANT)
+app.options("*", cors());
 
 /*
 ================================
@@ -44,8 +46,9 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // ⚠️ set true only in HTTPS production
+      secure: false, // ⚠️ keep false for now (Render issue)
       httpOnly: true,
+      sameSite: "lax", // ✅ important for CORS
       maxAge: 1000 * 60 * 30
     }
   })
@@ -53,7 +56,7 @@ app.use(
 
 /*
 ================================
-ROOT ROUTE (IMPORTANT FIX)
+ROOT ROUTE
 ================================
 */
 app.get("/", (req, res) => {
