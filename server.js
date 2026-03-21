@@ -12,12 +12,14 @@ const app = express();
 /*
 ================================
 CORS CONFIG
+Allow local + deployed frontend
 ================================
 */
 app.use(
   cors({
     origin: [
-      "http://localhost:5173"
+      "http://localhost:5173",              // local frontend
+      "https://your-frontend-url.vercel.app" // 🔴 replace after deploy
     ],
     credentials: true
   })
@@ -42,9 +44,8 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false,
+      secure: false, // ⚠️ set true only in HTTPS production
       httpOnly: true,
-      sameSite: "lax",
       maxAge: 1000 * 60 * 30
     }
   })
@@ -52,7 +53,7 @@ app.use(
 
 /*
 ================================
-ROOT ROUTE
+ROOT ROUTE (IMPORTANT FIX)
 ================================
 */
 app.get("/", (req, res) => {

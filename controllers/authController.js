@@ -38,12 +38,7 @@ exports.sendEmailOTP = async (req, res) => {
     const otp = generateOTP();
     const expiry = new Date(Date.now() + 2 * 60 * 1000);
 
-    // ✅ FIXED (NO CRASH)
-    try {
-      await sendEmailOTP(email, otp, "REGISTER");
-    } catch (error) {
-      console.log("Email failed but continuing:", error.message);
-    }
+    await sendEmailOTP(email, otp, "REGISTER");
 
     db.query(
       "INSERT INTO otp_verifications (email, otp, expires_at) VALUES (?,?,?)",
@@ -230,14 +225,7 @@ exports.loginUser = (req, res) => {
         req.session.adminOTP = otp;
         req.session.adminID = admin.id;
 
-        console.log("ADMIN OTP:", otp);
-
-        // ✅ FIXED (NO CRASH)
-        try {
-          await sendEmailOTP(admin.email, otp, "ADMIN_LOGIN");
-        } catch (error) {
-          console.log("Email failed but continuing:", error.message);
-        }
+        await sendEmailOTP(admin.email, otp);
 
         return res.json({
           message: "Admin OTP sent",
@@ -331,12 +319,7 @@ exports.sendPasswordResetOTP = async (req, res) => {
         const otp = generateOTP();
         const expiry = new Date(Date.now() + 2 * 60 * 1000);
 
-        // ✅ FIXED
-        try {
-          await sendEmailOTP(email, otp, "FORGOT_PASSWORD");
-        } catch (error) {
-          console.log("Email failed but continuing:", error.message);
-        }
+        await sendEmailOTP(email, otp, "FORGOT_PASSWORD");
 
         db.query(
           "INSERT INTO otp_verifications (email, otp, expires_at) VALUES (?,?,?)",

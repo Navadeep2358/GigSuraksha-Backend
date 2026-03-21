@@ -42,20 +42,26 @@ const otp = generateOTP();
 req.session.adminOTP = otp;
 req.session.adminID = admin.id;
 
-console.log("ADMIN OTP:",otp);
+console.log("ADMIN OTP:",otp); // for debugging
 
-/* 🔥 FIXED EMAIL HANDLING */
+try{
 
-try {
-  await sendEmailOTP(admin.email, otp, "ADMIN_LOGIN");
-} catch (error) {
-  console.log("Email failed but continuing:", error.message);
-}
+await sendEmailOTP(admin.email, otp, "ADMIN_LOGIN");
 
-return res.json({
-  message:"Admin OTP sent",
-  role:"admin"
+res.json({
+message:"Admin OTP sent",
+role:"admin"
 });
+
+}catch(error){
+
+console.log(error);
+
+res.status(500).json({
+message:"Email sending failed"
+});
+
+}
 
 });
 
