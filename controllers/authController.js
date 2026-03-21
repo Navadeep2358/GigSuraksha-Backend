@@ -225,7 +225,7 @@ exports.loginUser = (req, res) => {
         req.session.adminOTP = otp;
         req.session.adminID = admin.id;
 
-        await sendEmailOTP(admin.email, otp);
+       await sendEmailOTP(admin.email, otp, "ADMIN_LOGIN");
 
         return res.json({
           message: "Admin OTP sent",
