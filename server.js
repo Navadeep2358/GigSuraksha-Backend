@@ -7,7 +7,7 @@ const session = require("express-session");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 
-const app = express(); // ✅ MISSING LINE (VERY IMPORTANT)
+const app = express();
 
 /*
 ================================
@@ -17,15 +17,11 @@ CORS CONFIG
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",   // local frontend
-      // add your deployed frontend later
+      "http://localhost:5173"
     ],
     credentials: true
   })
 );
-
-// ✅ handle preflight requests (IMPORTANT)
-app.options("*", cors());
 
 /*
 ================================
@@ -46,9 +42,9 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // ⚠️ keep false for now (Render issue)
+      secure: false,
       httpOnly: true,
-      sameSite: "lax", // ✅ important for CORS
+      sameSite: "lax",
       maxAge: 1000 * 60 * 30
     }
   })
