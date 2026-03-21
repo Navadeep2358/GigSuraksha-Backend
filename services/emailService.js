@@ -2,6 +2,11 @@ const axios = require("axios");
 
 const sendEmailOTP = async (email, otp, type) => {
 
+  if (!process.env.BREVO_SMTP_KEY || !process.env.BREVO_SENDER_EMAIL) {
+    console.log("❌ Brevo ENV variables missing");
+    return;
+  }
+
   let subject = "";
   let message = "";
   let expiryText = "2 minutes";
@@ -26,17 +31,20 @@ const sendEmailOTP = async (email, otp, type) => {
     <div style="font-family:Arial;padding:20px">
       <h2>${subject}</h2>
       <p>${message}</p>
-      <h1 style="color:#2563eb">${otp}</h1>
+      <h1 style="color:#2563eb;letter-spacing:5px">${otp}</h1>
       <p>Valid for ${expiryText}</p>
     </div>
   `;
 
   try {
 
-    await axios.post(
+    const response = await axios.post(
       "https://api.brevo.com/v3/smtp/email",
       {
-        sender: { email: process.env.BREVO_SENDER_EMAIL },
+        sender: {
+          email: process.env.BREVO_SENDER_EMAIL,
+          name: "GigSuraksha"
+        },
         to: [{ email }],
         subject: subject,
         htmlContent: htmlContent
@@ -49,11 +57,14 @@ const sendEmailOTP = async (email, otp, type) => {
       }
     );
 
-    console.log("✅ Email sent successfully");
+    console.log("✅ Email sent successfully:", response.data.messageId);
 
   } catch (error) {
 
-    console.log("❌ Email failed:", error.response?.data || error.message);
+    console.log("❌ Email failed:");
+    console.log("Status:", error.response?.status);
+    console.log("Data:", error.response?.data);
+    console.log("Message:", error.message);
 
   }
 
